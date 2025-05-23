@@ -24,7 +24,7 @@ class VecMonitor(VecEnvWrapper):
 
     def step_wait(self):
         obs, rews, dones, infos = self.venv.step_wait()
-        self.eprets += rews
+        self.eprets += rews.sum(axis=1)
         self.eplens += 1
 
         newinfos = list(infos[:])
@@ -86,15 +86,17 @@ def create_envs(args: dict) -> Tuple[Union[VecMonitor, VecVideoRecorder], List[s
     # AttackRewardFunction(),
     # ProduceCombatUnitRewardFunction(),
 
-    if 'reward_weights' in args and args['reward_weights'] is not None:
-        # Custom weights
-        reward_weight = np.array(args['reward_weights'])
-    elif args['sparse_rewards']:
-        # Only rewards win/lose
-        reward_weight = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-    else:
-        # Rewards other actions like making units and killing others.
-        reward_weight = np.array([10.0, 1.0, 1.0, 0.2, 1.0, 4.0])
+    # if 'reward_weights' in args and args['reward_weights'] is not None:
+    #     # Custom weights
+    #     reward_weight = np.array(args['reward_weights'])
+    # elif args['sparse_rewards']:
+    #     # Only rewards win/lose
+    #     reward_weight = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    # else:
+    #     # Rewards other actions like making units and killing others.
+    #     reward_weight = np.array([10.0, 1.0, 1.0, 0.2, 1.0, 4.0])
+        
+    reward_weight = np.array([20.0, 1.5, 1.5, 0.4, 3.0, 6.0])
 
     # TODO: add 24x24/basesWorkers24x24.xml or 32x32 variant
     if args['map_size'] == 8:

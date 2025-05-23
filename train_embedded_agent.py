@@ -13,9 +13,15 @@ from transformer_agent.micro_rts_env import create_envs
 from jpype.types import JArray, JInt
 from argparse import Namespace
 
+from shape_reward import RewardShaper
+from observation_parser import ObservationParser
+
 if __name__ == "__main__":
     args = get_run_args()
     resumed = args.command == 'resume'
+    
+    rewardShaper = RewardShaper()
+    observationParser = ObservationParser()
 
     if args.prod_mode:
         import wandb
@@ -147,7 +153,7 @@ for update in range(starting_update, num_updates + 1):
     # TRY NOT TO MODIFY: prepare the execution of the game.
     print('Playing...')
     for step in range(0, args.num_steps):
-        envs.render()
+        # envs.render()
         global_step += 1 * args.num_envs
         obs[step] = next_obs
         entity_masks[step] = next_entity_mask
@@ -200,7 +206,12 @@ for update in range(starting_update, num_updates + 1):
 
         with torch.no_grad():
             try:
-                raw_obs, rs, ds, infos = envs.step(java_valid_actions)
+                raw_obs, rs, ds, infos = envs.step(java_valid_actions) # rs is now a vector
+                
+                # print(rs.shape)
+                observationParser.initialize_observation(raw_obs)
+                rs = rewardShaper.get_reshaped_reward(observationParser, rs, step, envs.reward_weight)
+                
                 next_obs, next_entity_mask, next_entity_count, next_unit_position, next_unit_mask, next_enemy_unit_mask, next_neutral_unit_mask = \
                     reshape_observation_mixed_embedded(torch.Tensor(raw_obs).to(device), device)
             except Exception as e:
