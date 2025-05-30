@@ -72,11 +72,10 @@ def create_envs(args: dict) -> Tuple[Union[VecMonitor, VecVideoRecorder], List[s
     if args['num_bot_envs'] < 12:
         ai_opponents = [microrts_ai.coacAI for _ in range(args['num_bot_envs'])]
     else:
-        ai_opponents = [microrts_ai.coacAI for _ in range(args['num_bot_envs'] - 8)] + \
+        ai_opponents = [microrts_ai.coacAI for _ in range(args['num_bot_envs'] - 6)] + \
                        [microrts_ai.randomBiasedAI for _ in range(2)] + \
                        [microrts_ai.lightRushAI for _ in range(2)] + \
-                       [microrts_ai.workerRushAI for _ in range(2)] + \
-                       [microrts_ai.droplet for _ in range(2)]
+                       [microrts_ai.workerRushAI for _ in range(2)]
     ai_opponent_names = [ai.__name__ for ai in ai_opponents]
 
     # Weight order is as follows:
