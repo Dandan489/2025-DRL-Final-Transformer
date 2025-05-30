@@ -62,11 +62,6 @@ class RewardShaper:
         #     transffered_reward[4] = transffered_reward[4] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
         #     transffered_reward[5] = transffered_reward[5] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
 
-        # Time Penalty
-        time_penalty = [0 for _ in range(obs_parser.num_env)] # [num_envs]
-        if(timestep > self.decay_timestep):
-            time_penalty = min(transffered_reward, transffered_reward * (self.decay_rate * (timestep - self.decay_timestep)))
-
         # Defense Penalty
         defense_penalty = self.get_denfense_penalty(obs_parser, self.defense_penalty_range) # [num_envs]
 
@@ -74,14 +69,19 @@ class RewardShaper:
         type_penalty = self.get_type_penalty(obs_parser, transffered_reward, reward_weight) # [num_envs]
 
         transffered_reward = np.dot(transffered_reward, reward_weight) # [num_envs]
+        
+        # Time Penalty
+        time_penalty = [0 for _ in range(obs_parser.num_env)] # [num_envs]
+        if(timestep > self.decay_timestep):
+            time_penalty = min(transffered_reward, transffered_reward * (self.decay_rate * (timestep - self.decay_timestep)))
 
         # print(transffered_reward, time_penalty, defense_penalty, type_penalty)
 
         self.reshaped_reward = transffered_reward - time_penalty - defense_penalty - type_penalty
         self.reshaped_reward = [0.0 if x < 0 else x for x in self.reshaped_reward]
         result = [
-            r if o < 0 else rr
-            for o, rr, r in zip(transffered_reward, self.reshaped_reward, transffered_reward)
+            r if r < 0 else rr
+            for r, rr in zip(transffered_reward, self.reshaped_reward)
         ]
         return result
 
@@ -108,7 +108,7 @@ class RewardShaper:
         building_reward = [0 for _ in range(obs_parser.num_env)]
         for e in range(obs_parser.num_env):
             building_reward[e] += original_reward[e][3]
-        building_reward /= reward_weight[3]
+        building_reward = np.array(building_reward) / reward_weight[3]
 
         building_penalty = [0 for _ in range(obs_parser.num_env)]
         for e in range(obs_parser.num_env):
@@ -122,7 +122,7 @@ class RewardShaper:
         worker_reward = [0 for _ in range(obs_parser.num_env)]
         for e in range(obs_parser.num_env):
             worker_reward[e] += original_reward[e][2]
-        worker_reward /= reward_weight[2]
+        worker_reward = np.array(worker_reward) / reward_weight[2]
 
         worker_penalty = [0 for _ in range(obs_parser.num_env)]
         for e in range(obs_parser.num_env):
