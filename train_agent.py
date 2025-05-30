@@ -204,7 +204,8 @@ for update in range(starting_update, num_updates + 1):
                 raw_obs, rs, ds, infos = envs.step(java_valid_actions)
                 
                 observationParser.initialize_observation(raw_obs)
-                rs = rewardShaper.get_reshaped_reward(observationParser, rs, step, envs.reward_weight)
+                rs = rewardShaper.get_reshaped_reward(observationParser, rs, envs.eplens, envs.reward_weight)
+                # rs = np.dot(rs, envs.reward_weight)
                 
                 next_obs, next_entity_mask, next_entity_count, next_unit_position, next_unit_mask, next_enemy_unit_mask, next_neutral_unit_mask = \
                     reshape_observation_extended(torch.Tensor(raw_obs).to(device), device)
@@ -224,8 +225,11 @@ for update in range(starting_update, num_updates + 1):
                         writer.add_scalar(f"charts/episode_reward/{key}", info['microrts_stats'][key], global_step)
                     # Add win-loss reward specific to ai opponent:
                     win_reward = info['microrts_stats']['WinLossRewardFunction']
-                    writer.add_scalar(f"charts/episode_reward/WinLossRewardFunction/{ai_opponent_names[i]}",
-                                      win_reward, global_step)
+                    if i < args.num_selfplay_envs:
+                        writer.add_scalar(f"charts/episode_reward/WinLossRewardFunction/selfplay", win_reward, global_step)
+                    else:
+                        ai_idx = i - args.num_selfplay_envs
+                        writer.add_scalar(f"charts/episode_reward/WinLossRewardFunction/{ai_opponent_names[ai_idx]}", win_reward, global_step)
                     if game_count > 0:
                         running_reward += (win_reward - running_reward) / game_count
                     else:

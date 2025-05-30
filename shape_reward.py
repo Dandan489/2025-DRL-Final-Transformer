@@ -1,6 +1,3 @@
-import gym_microrts
-print(gym_microrts.__file__)
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -32,8 +29,6 @@ from observation_parser import ObservationParser
 
 class RewardShaper:
     def __init__(self):
-        self.reshaped_reward = 0
-
         self.decay_timestep = 1000
         self.decay_rate = 0.001
 
@@ -53,35 +48,36 @@ class RewardShaper:
     def get_reshaped_reward(self, obs_parser: ObservationParser, original_reward, timestep, reward_weight):
 
         # Reward Transfer (curriculum)
-        transffered_reward = original_reward # [num_envs, 6]
+        transferred_reward = original_reward # [num_envs, 6]
         # if(timestep > self.reward_transfer_start):
-        #     transffered_reward[0] = transffered_reward[0]
-        #     transffered_reward[1] = transffered_reward[1] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
-        #     transffered_reward[2] = transffered_reward[2] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
-        #     transffered_reward[3] = transffered_reward[3] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
-        #     transffered_reward[4] = transffered_reward[4] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
-        #     transffered_reward[5] = transffered_reward[5] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
+        #     transferred_reward[0] = transferred_reward[0]
+        #     transferred_reward[1] = transferred_reward[1] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
+        #     transferred_reward[2] = transferred_reward[2] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
+        #     transferred_reward[3] = transferred_reward[3] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
+        #     transferred_reward[4] = transferred_reward[4] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
+        #     transferred_reward[5] = transferred_reward[5] * max(0, 1 - self.reward_transfer_rate * (episode - self.reward_transfer_start))
 
         # Defense Penalty
         defense_penalty = self.get_denfense_penalty(obs_parser, self.defense_penalty_range) # [num_envs]
 
         # Type Penalty
-        type_penalty = self.get_type_penalty(obs_parser, transffered_reward, reward_weight) # [num_envs]
+        type_penalty = self.get_type_penalty(obs_parser, transferred_reward, reward_weight) # [num_envs]
 
-        transffered_reward = np.dot(transffered_reward, reward_weight) # [num_envs]
+        transferred_reward = np.dot(transferred_reward, reward_weight) # [num_envs]
         
         # Time Penalty
         time_penalty = [0 for _ in range(obs_parser.num_env)] # [num_envs]
-        if(timestep > self.decay_timestep):
-            time_penalty = np.minimum(transffered_reward, transffered_reward * (self.decay_rate * (timestep - self.decay_timestep)))
+        for e in range(obs_parser.num_env):
+            if(timestep[e] > self.decay_timestep):
+                time_penalty[e] = np.minimum(transferred_reward, transferred_reward * max(0, (self.decay_rate * (timestep[e] - self.decay_timestep))))
 
-        # print(transffered_reward, time_penalty, defense_penalty, type_penalty)
+        # print(transferred_reward, time_penalty, defense_penalty, type_penalty)
 
-        self.reshaped_reward = transffered_reward - time_penalty - defense_penalty - type_penalty
-        self.reshaped_reward = [0.0 if x < 0 else x for x in self.reshaped_reward]
+        reshaped_reward = transferred_reward - time_penalty - defense_penalty - type_penalty
+        reshaped_reward = [0.0 if x < 0 else x for x in reshaped_reward]
         result = [
             r if r < 0 else rr
-            for r, rr in zip(transffered_reward, self.reshaped_reward)
+            for r, rr in zip(transferred_reward, reshaped_reward)
         ]
         return result
 
