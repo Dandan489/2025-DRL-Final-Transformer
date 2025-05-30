@@ -73,7 +73,7 @@ class RewardShaper:
         # Time Penalty
         time_penalty = [0 for _ in range(obs_parser.num_env)] # [num_envs]
         if(timestep > self.decay_timestep):
-            time_penalty = min(transffered_reward, transffered_reward * (self.decay_rate * (timestep - self.decay_timestep)))
+            time_penalty = np.minimum(transffered_reward, transffered_reward * (self.decay_rate * (timestep - self.decay_timestep)))
 
         # print(transffered_reward, time_penalty, defense_penalty, type_penalty)
 
