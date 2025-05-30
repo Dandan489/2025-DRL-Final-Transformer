@@ -44,7 +44,7 @@ def get_run_args():
     # Algorithm specific arguments
     parser_new.add_argument('--n-minibatch', type=int, default=4,
                             help='the number of mini batch')
-    parser_new.add_argument('--num-bot-envs', type=int, default=24,
+    parser_new.add_argument('--num-bot-envs', type=int, default=16,
                             help='the number of bot game environment; 16 bot envs means 16 games')
     parser_new.add_argument('--num-selfplay-envs', type=int, default=0,
                             help='the number of self play envs; 16 self play envs means 8 games')
