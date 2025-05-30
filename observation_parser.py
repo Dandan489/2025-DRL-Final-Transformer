@@ -71,7 +71,8 @@ class ObservationParser:
 
         self.enemy_barracks_pos = [[] for _ in range(self.num_env)]
         self.enemy_bases_pos = [[] for _ in range(self.num_env)]
-
+        
+        
         #parse
         for e in range(self.num_env):
             plane_data = [[] for _ in range(self.H)]
@@ -79,37 +80,38 @@ class ObservationParser:
                 for j in range(self.W):
                     plane_data[i].append(self.parse_feature(vec_obs[e][i][j]))
             self.parsed_obs.append(plane_data)
+        self.count_units()
         return self.parsed_obs
     
     def count_units(self):
         for e in range(self.num_env):
             for h in range(self.H):
                 for w in range(self.W):
-                    if self.obs[e][h][w].unit_type == 2 and self.obs[e][h][w].owner == 0:
-                        self.bases_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 3 and self.obs[e][h][w].owner == 0:
-                        self.barracks_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 4 and self.obs[e][h][w].owner == 0:
-                        self.workers_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 5 and self.obs[e][h][w].owner == 0:
-                        self.lights_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 6 and self.obs[e][h][w].owner == 0:
-                        self.heavies_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 7 and self.obs[e][h][w].owner == 0:
-                        self.ranges_pos.append((h, w))
+                    if self.parsed_obs[e][h][w].unit_types == 2 and self.parsed_obs[e][h][w].owner == 1:
+                        self.bases_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 3 and self.parsed_obs[e][h][w].owner == 1:
+                        self.barracks_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 4 and self.parsed_obs[e][h][w].owner == 1:
+                        self.workers_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 5 and self.parsed_obs[e][h][w].owner == 1:
+                        self.lights_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 6 and self.parsed_obs[e][h][w].owner == 1:
+                        self.heavies_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 7 and self.parsed_obs[e][h][w].owner == 1:
+                        self.ranges_pos[e].append((h, w))
                     
-                    elif self.obs[e][h][w].unit_type == 2 and self.obs[e][h][w].owner == 1:
-                        self.enemy_bases_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 3 and self.obs[e][h][w].owner == 1:
-                        self.enemy_barracks_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 4 and self.obs[e][h][w].owner == 1:
-                        self.enemy_workers_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 5 and self.obs[e][h][w].owner == 1:
-                        self.enemy_lights_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 6 and self.obs[e][h][w].owner == 1:
-                        self.enemy_heavies_pos.append((h, w))
-                    elif self.obs[e][h][w].unit_type == 7 and self.obs[e][h][w].owner == 1:
-                        self.enemy_ranges_pos.append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 2 and self.parsed_obs[e][h][w].owner == 2:
+                        self.enemy_bases_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 3 and self.parsed_obs[e][h][w].owner == 2:
+                        self.enemy_barracks_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 4 and self.parsed_obs[e][h][w].owner == 2:
+                        self.enemy_workers_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 5 and self.parsed_obs[e][h][w].owner == 2:
+                        self.enemy_lights_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 6 and self.parsed_obs[e][h][w].owner == 2:
+                        self.enemy_heavies_pos[e].append((h, w))
+                    elif self.parsed_obs[e][h][w].unit_types == 7 and self.parsed_obs[e][h][w].owner == 2:
+                        self.enemy_ranges_pos[e].append((h, w))
                     
                     
                     
