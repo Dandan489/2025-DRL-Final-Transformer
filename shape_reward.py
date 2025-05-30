@@ -40,8 +40,8 @@ class RewardShaper:
         self.defense_penalty_range = 3
         self.defense_penalty = 0.2
 
-        self.worker_decay_start = 10
-        self.worker_decay_rate = 0.2
+        self.worker_decay_start = 4
+        self.worker_decay_rate = 0.5
         # self.combat_decay_start = 30
         # self.combat_decay_rate = 0.1
         self.building_decay_start = 4
