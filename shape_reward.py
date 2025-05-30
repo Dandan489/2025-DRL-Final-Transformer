@@ -59,9 +59,10 @@ class RewardShaper:
 
         # Defense Penalty
         defense_penalty = self.get_denfense_penalty(obs_parser, self.defense_penalty_range) # [num_envs]
-
+        #print(defense_penalty)
         # Type Penalty
         type_penalty = self.get_type_penalty(obs_parser, transferred_reward, reward_weight) # [num_envs]
+        #print(type_penalty)
 
         transferred_reward = np.dot(transferred_reward, reward_weight) # [num_envs]
         
@@ -93,7 +94,7 @@ class RewardShaper:
                         if not is_valid(h, w):
                             continue
                         grid = obs_parser.parsed_obs[e][h][w]
-                        if grid.owner == 1 and grid.unit_types in (4, 5, 6, 7): #check wether it is an enemy's worker, light, heavy or range
+                        if grid.owner == 2 and grid.unit_types in (4, 5, 6, 7): #check wether it is an enemy's worker, light, heavy or range
                             defense_penalty[e] += self.defense_penalty # TODO, decide the value...
             defense_penalty[e] = min(1, defense_penalty[e])
 
@@ -118,11 +119,13 @@ class RewardShaper:
         worker_reward = [0 for _ in range(obs_parser.num_env)]
         for e in range(obs_parser.num_env):
             worker_reward[e] += original_reward[e][2]
+        #print(worker_reward)
         worker_reward = np.array(worker_reward) / reward_weight[2]
 
         worker_penalty = [0 for _ in range(obs_parser.num_env)]
         for e in range(obs_parser.num_env):
             worker_count = len(obs_parser.workers_pos[e])
+            #print('e:' ,e, '| worker_count:', worker_count)
             if(worker_count > self.worker_decay_start):
                 worker_penalty[e] = min(worker_reward[e], (self.worker_decay_rate * (worker_count - self.worker_decay_start)))
             else:
