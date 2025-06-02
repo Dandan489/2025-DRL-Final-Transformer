@@ -7,7 +7,7 @@ import numpy as np
 import time
 import random
 import os
-from observation_parser import ObservationParser
+from DRL_Final.observation_parser import ObservationParser
 
 # reward shape: [num_envs, 6]
 

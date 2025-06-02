@@ -1,4 +1,4 @@
-from map_generator import *
+from DRL_Final.map_generator import *
 
 def LHR2():
     map_generator = MapGenerator("LHR2.xml", 8, 8)

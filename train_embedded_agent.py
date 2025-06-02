@@ -13,8 +13,8 @@ from transformer_agent.micro_rts_env import create_envs
 from jpype.types import JArray, JInt
 from argparse import Namespace
 
-from shape_reward import RewardShaper
-from observation_parser import ObservationParser
+from DRL_Final.shape_reward import RewardShaper
+from DRL_Final.observation_parser import ObservationParser
 
 if __name__ == "__main__":
     args = get_run_args()

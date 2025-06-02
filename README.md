@@ -1,7 +1,8 @@
-# Transformers as Policies for Variable Action Environments
-This is the repository associated with the research paper "Transformers as Policies for Variable Action Environments" ([paper](https://arxiv.org/abs/2301.03679), [presentation](https://docs.google.com/presentation/d/1I3T6ury_nIIas1JX1hEWI_qm8Tnf0lmRx0Sukh1phVs/edit?usp=sharing)) presented at the 18th AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment ([AIIDE-22](https://sites.google.com/view/aiide-2022/?pli=1)) - Strategy games. 
-It describes a scalable transformer architecture that is used to train an RL agent in the [Micro-RTS environment](https://github.com/Farama-Foundation/MicroRTS-Py), which has managed to outperform other RL agents in this variable action environment in terms of computational cost and episodic return.
-We provide installation and running instructions in the following sections.
+# Lightweight RL Agent in Full Length Real-Time Strategy Game
+This is the repository associated with the DRL Final Project "Lightweight RL Agent in Full Length Real-Time
+Strategy Game". It describes a scalable transformer architecture that is used to train an RL agent in the [Micro-RTS environment](https://github.com/Farama-Foundation/MicroRTS-Py), which has managed to outperform other RL agents in this variable action environment in terms of computational cost and episodic return.
+We provide installation and running instructions in the following sections \
+(Training and Evaluation sections is provided by the original repo).
 
 
 <p align="center">
@@ -13,6 +14,11 @@ Install dependencies with `pip install -r requirements.txt --extra-index-url htt
 
 Note here that we assume a CUDA version 11.3 for GPU-based training. To disable the GPU usage or upgrade the dependency,
 you will need to modify `requirements.txt`.
+
+We additionally provide a dump file of our conda environment in `environment.yml`, you can also use it to setup the environment.
+
+## Additional Setup
+To apply the reshaped reward, you need to modify the Gym-microRTS package in your environment (we use conda here), you should be able to find the location of your vec_env.py file with `DRL_Final/find_package.py`, then modify the return value of `MicroRTSGridModeVecEnv.step_wait()` function, replace `return np.array(obs), reward @ self.reward_weight, done[:,0], infos` with `return np.array(obs), reward, done[:,0], infos`
 
 ## Training
 During training, we use [Weights and Biases](https://wandb.ai/) to checkpoint and monitor the agent. 
@@ -70,17 +76,20 @@ And similarly for the 16x16 agent:
 Where [example_models](example_models) contains the already trained models. If using your own model, set your own `--agent-model-path`. 
 We also provide the generated output evaluation under [evaluation](evaluation).
 
-## Cite this Repository
-This paper is still waiting for the publisher to release the notebook. For now, please cite as:
-```
-@misc{zwingenberger2023transformers,
-      title={Transformers as Policies for Variable Action Environments}, 
-      author={Niklas Zwingenberger},
-      year={2023},
-      eprint={2301.03679},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI}
-}
-```
+## Modules
+`DRL_Final/map_generator.py` and `DRL_Final/map_generator_test.py`:
+To use our custom map maker, modify `save_path` in `DRL_Final/map_generator.py` first, then modify `DRL_Final/map_generator_test.py` to design your own map according to the provided example.
 
+`DRL_Final/observation_parser.py`:
+The module to parser input state for reward shaping. (already applied to both training script)
 
+`DRL_Final/shape_reward.py`:
+The module to apply reshaped reward. (already applied to both training script)
+
+`DRL_Final/partial_observation.py`:
+The module to apply partial observation masking. (not thoroughly tested)
+
+## Models
+Our trained models are located in `DRL_Final/latest_models`, the 16x16 models are still performing pretty badly though.
+The expected skill of baseline agents in the `basesWorkers16x16` map is also provided below
+![skill](DRL_Final\bot_skill.png)

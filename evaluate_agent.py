@@ -94,7 +94,7 @@ class VecMonitor(VecEnvWrapper):
 
     def step_wait(self):
         obs, rews, dones, infos = self.venv.step_wait()
-        self.eprets += rews
+        self.eprets += rews.sum(axis=1)
         self.eplens += 1
 
         newinfos = list(infos[:])
@@ -175,18 +175,18 @@ torch.manual_seed(args.seed)
 torch.backends.cudnn.deterministic = args.torch_deterministic
 
 all_ais = {
-    # "guidedRojoA3N": microrts_ai.guidedRojoA3N,
-    # "randomBiasedAI": microrts_ai.randomBiasedAI,
-    # "randomAI": microrts_ai.randomAI,
-    # "passiveAI": microrts_ai.passiveAI,
+    "guidedRojoA3N": microrts_ai.guidedRojoA3N,
+    "randomBiasedAI": microrts_ai.randomBiasedAI,
+    "randomAI": microrts_ai.randomAI,
+    "passiveAI": microrts_ai.passiveAI,
     "workerRushAI": microrts_ai.workerRushAI,
-    # "lightRushAI": microrts_ai.lightRushAI,
-    # "coacAI": microrts_ai.coacAI,
-    # "naiveMCTSAI": microrts_ai.naiveMCTSAI,
-    # "mixedBot": microrts_ai.mixedBot,
-    # "rojo": microrts_ai.rojo,
-    # "izanagi": microrts_ai.izanagi,
-    # "tiamat": microrts_ai.tiamat,
+    "lightRushAI": microrts_ai.lightRushAI,
+    "coacAI": microrts_ai.coacAI,
+    "naiveMCTSAI": microrts_ai.naiveMCTSAI,
+    "mixedBot": microrts_ai.mixedBot,
+    "rojo": microrts_ai.rojo,
+    "izanagi": microrts_ai.izanagi,
+    "tiamat": microrts_ai.tiamat,
     "droplet": microrts_ai.droplet,
 }
 ai_names, ais = list(all_ais.keys()), list(all_ais.values())
@@ -270,7 +270,7 @@ for envs_idx, env in enumerate(ai_envs):
             env.start_video_recorder(g + 1)
 
         while not done:
-            # env.render()
+            env.render()
             # ALGO LOGIC: put action logic here
             with torch.no_grad():
                 action, logproba, _, invalid_action_mask = agent.get_action(next_obs,
