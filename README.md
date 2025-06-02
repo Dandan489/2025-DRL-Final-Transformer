@@ -1,8 +1,7 @@
 # Lightweight RL Agent in Full Length Real-Time Strategy Game
 This is the repository associated with the DRL Final Project "Lightweight RL Agent in Full Length Real-Time
-Strategy Game". It describes a scalable transformer architecture that is used to train an RL agent in the [Micro-RTS environment](https://github.com/Farama-Foundation/MicroRTS-Py), which has managed to outperform other RL agents in this variable action environment in terms of computational cost and episodic return.
-We provide installation and running instructions in the following sections \
-(Training and Evaluation sections is provided by the original repo).
+Strategy Game". It describes a scalable transformer architecture that is used to train an RL agent in the [Micro-RTS environment](https://github.com/Farama-Foundation/MicroRTS-Py), which has managed to outperform other RL agents in this variable action environment in terms of computational cost and episodic return. We provide installation and running instructions in the following sections. \
+(Most sections are provided by the original repo).
 
 
 <p align="center">
@@ -77,19 +76,19 @@ Where [example_models](example_models) contains the already trained models. If u
 We also provide the generated output evaluation under [evaluation](evaluation).
 
 ## Modules
-`DRL_Final/map_generator.py` and `DRL_Final/map_generator_test.py`:
+`DRL_Final/map_generator.py` and `DRL_Final/map_generator_test.py`: \
 To use our custom map maker, modify `save_path` in `DRL_Final/map_generator.py` first, then modify `DRL_Final/map_generator_test.py` to design your own map according to the provided example.
 
-`DRL_Final/observation_parser.py`:
+`DRL_Final/observation_parser.py`: \
 The module to parser input state for reward shaping. (already applied to both training script)
 
-`DRL_Final/shape_reward.py`:
+`DRL_Final/shape_reward.py`: \
 The module to apply reshaped reward. (already applied to both training script)
 
-`DRL_Final/partial_observation.py`:
+`DRL_Final/partial_observation.py`: \
 The module to apply partial observation masking. (not thoroughly tested)
 
 ## Models
 Our trained models are located in `DRL_Final/latest_models`, the 16x16 models are still performing pretty badly though.
-The expected skill of baseline agents in the `basesWorkers16x16` map is also provided below
-![skill](DRL_Final\bot_skill.png)
+The expected skill of baseline agents in the `basesWorkers16x16` map is also provided below: \
+![](DRL_Final/bot_skill.png)
